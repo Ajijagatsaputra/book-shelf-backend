@@ -72,32 +72,36 @@ const addBookHandler = (request, h) => {
 };
 
 const getAllBooks = (request, h) => {
-  const  { name, reading, finished } = request.query;
-  const certainBooks = books;
-  const isReading = !!Number(reading);
-  const isFinished = !!Number(finished);
-  if(name !== undefined){
-    certainBooks = certainBooks.filter((n) => n.name.toUpperCase().includes(name.toUpperCase()));
+  const { name, reading, finished } = request.query;
+  let certainBooks = books;  
+
+  if (name !== undefined) {
+    certainBooks = certainBooks.filter((n) =>
+      n.name.toUpperCase().includes(name.toUpperCase())
+    );
   }
 
-  if (reading !== undefined){
+  if (reading !== undefined) {
+    const isReading = reading === '1';  
     certainBooks = certainBooks.filter((n) => n.reading === isReading);
   }
 
-  if (finished !== undefined){
+  if (finished !== undefined) {
+    const isFinished = finished === '1'; 
     certainBooks = certainBooks.filter((n) => n.finished === isFinished);
   }
 
   const response = h.response({
     status: "success",
     data: {
-      books: certainBooks.map((books) => ({
-        id: books.id,
-        name: books.name,
-        publisher: books.publisher,
+      books: certainBooks.map((book) => ({
+        id: book.id,
+        name: book.name,
+        publisher: book.publisher,
       })),
     },
   });
+
   response.code(200);
   return response;
 }
@@ -196,7 +200,7 @@ const deleteBooksByIdHandler = (request, h) => {
   const index = books.findIndex((n) => n.id === id);
 
   if (index !== -1) {
-    books.splice(index, -1);
+    books.splice(index, 1); 
     const response = h.response({
       status: "success",
       message: "Buku berhasil dihapus",
